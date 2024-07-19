@@ -73,18 +73,48 @@ function Board({ xIsNext, squares, onPlay }) {
 // The keyword default defines this function as the main one to be exported
 export default function Game() {
   // useState is used to remember the current state of the board
-  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [history, setHistory] = useState([{
+    squares: Array(9).fill(null),
+    row: null,
+    col: null
+  }]);
+
   // useState is used to remember the current move in currentMove and setCurrrentMove is used to change it
   const [currentMove, setCurrentMove] = useState(0);
   // xIsNext is true if the current move is even
   const xIsNext = currentMove % 2 === 0;
   // currentSquares is the board state of the current move
-  const currentSquares = history[currentMove];
+  const currentSquares = history[currentMove].squares;
+  
+  // Determines the difference between previous and current squares and saves it as an array
+  function getIndexOfTheLastSquare(previousSquares, currentSquares) {
+    for (let i = 0; i < previousSquares.length; i++) {
+      // Checks if the elements are different and returns the index of the different element (i)
+      if (previousSquares[i] != currentSquares[i]) {
+        return i;
+      }
+    }
+  }
 
+  // Updates the game state when a player makes a move
   function handlePlay(nextSquares) {
-    // nextHistory is a copy of the history array with the added current move
-    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
-    // Sets the history to nextHistory and the current move to the last move
+    // Retrieve the squares from the previous move to compare with the current move
+    const previousSquares = history[currentMove].squares;
+    // Get the index of the square that was changed in the current move
+    let index = getIndexOfTheLastSquare(previousSquares, nextSquares);
+
+    // Calculates the row and column based on the index of the new square
+    const row = Math.floor(index / 3) + 1;
+    const col = index % 3 + 1;
+    
+    // Create the next history state by appending the new squares, row, and column to the existing history
+    const nextHistory = [...history.slice(0, currentMove + 1), {
+      squares: nextSquares,
+      row: row,
+      col: col
+    }];
+    
+    // Update the history state and set the current move to the latest move
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   }
@@ -95,13 +125,13 @@ export default function Game() {
   }
 
   // Maps the history array to a list of buttons that allow the user to jump to a previous move
-  const moves = history.map((squares, move) => {
-    let description;
+  const moves = history.map((entry, move) => {
+    let description; 
 
     if (move === currentMove) {
       description = "You are at move #" + move;
     } else if (move > 0) {
-      description = "Go to move #" + move;
+      description = `Go to move #${move} (${entry.row}, ${entry.col})`;
     } else {
       description = "Go to game start";
     }
@@ -123,8 +153,12 @@ export default function Game() {
     }
   });
 
+  /* useState hook is used to manage the order of moves displayed in the game history
+  The initial state is set to true, indicating that the moves are displayed in ascending order */
   const [isAscending, setIsAscending] = useState(true);
 
+  /* Function to toggle the order of the moves displayed in the game history.
+  When called, it reverses the current order by setting isAscending to its opposite value. */
   const handleToggleOrder = () => {
     setIsAscending(!isAscending);
   };
