@@ -96,3 +96,26 @@ body {
 .square.O {
   color: blue;
 }
+
+button {
+  font-family: 'Roboto';
+  font-size: 0.9rem;
+}
+
+li {
+  margin: 4px;
+}
+
+li, .status, .currentMove {
+  font-family: 'Roboto';
+  font-size: 1rem;
+}
+
+.currentMove {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.square.highlight {
+  background-color: #F8DA77;
+}
