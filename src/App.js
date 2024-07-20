@@ -17,30 +17,22 @@ function Square({ value, onSquareClick, isHighlighted }) {
 
 function Board({ xIsNext, squares, onPlay }) {
   function handleClick(i) {
-    // Checks if there is a winner or if the square is already filled and exists if true
+    // Checks if there is a winner or if the square is already filled and exits if true
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
     // Copies the squares array
     const nextSquares = squares.slice();
-    // Changes the value of the square to X or O
-    if (xIsNext) {
-      nextSquares[i] = "X";
-    } else {
-      nextSquares[i] = "O";
-    }
-    // Calls the onPlay function with the new squares array
+    // Changes the value of the next square to X or O according to the value of xIsNext
+    nextSquares[i] = xIsNext ? "X" : "O";
+      // Calls the onPlay function with the new squares array
     onPlay(nextSquares);
   }
 
   // Checks if there is a winner and either writes it down if there is, or writes down the next player if there isn't
   const winner = calculateWinner(squares);
   let status;
-  if (winner) {
-    status = "Winner: " + winner[0];
-  } else {
-    status = "Next player: " + (xIsNext ? "X" : "O");
-  }
+  status = winner ? "Winner: " + winner[0] : "Next player: " + (xIsNext ? "X" : "O");
 
   /* Creates an array of 3 rows where each row is a div element with the class board-row. 
   Inside each row there is another array of 3 squares as Square components.
